@@ -51,16 +51,33 @@ bookmarkRouter
       .end();
   });
 
-bookmarkRouter.route("/bookmark/:id").get((req, res) => {
-  const { id } = req.params;
-  const book = bookmarks.find(b => b.id == id);
+bookmarkRouter
+  .route("/bookmark/:id")
+  .get((req, res) => {
+    const { id } = req.params;
+    const book = bookmarks.find(b => b.id == id);
 
-  // Ensure book is found:
-  if (!book) {
-    logger.error(`Book with id ${id} not found.`);
-    return res.status(404).send("Book not found");
-  }
-  res.json(book);
-});
+    // Ensure book is found:
+    if (!book) {
+      logger.error(`Book with id ${id} not found.`);
+      return res.status(404).send("Book not found");
+    }
+    res.json(book);
+  })
+  .delete((req, res) => {
+    const { id } = req.params;
+
+    const bookIndex = bookmarks.findIndex(b => b.id == id);
+
+    if (bookIndex === -1) {
+      logger.error(`Bookmark with id ${id} not found`);
+      return res.status(404).send("Not found");
+    }
+
+    // Remove bookmark from list:
+    bookmarks.splice(bookIndex, 1);
+
+    res.status(204).end();
+  });
 
 module.exports = bookmarkRouter;
