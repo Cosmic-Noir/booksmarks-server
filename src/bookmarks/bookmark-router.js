@@ -9,9 +9,47 @@ const { bookmarks } = require("../bookmarks");
 const bookmarkRouter = express.Router();
 const bodyParser = express.json();
 
-bookmarkRouter.route("/bookmark").get((req, res) => {
-  res.json(bookmarks);
-});
+bookmarkRouter
+  .route("/bookmark")
+  .get((req, res) => {
+    res.json(bookmarks);
+  })
+  .post(bodyParser, (req, res) => {
+    const { title, author, rating } = req.body;
+
+    // Validate
+    if (!title) {
+      logger.error(`Title is required`);
+      return res.status(400).send("Invalid data");
+    }
+
+    if (!author) {
+      logger.error(`Author is required`);
+      return res.status(400).send("Invalid data");
+    }
+
+    if (!rating) {
+      logger.error(`Rating is required`);
+      return res.status(400).send("Invalid data");
+    }
+
+    const id = uuid();
+
+    const book = {
+      id,
+      title,
+      author,
+      rating
+    };
+
+    bookmarks.push(book);
+    logger.info(`Book with id ${id} created`);
+
+    res
+      .status(201)
+      .location(`http://localhost:8000/bookmark/${id}`)
+      .end();
+  });
 
 bookmarkRouter.route("/bookmark/:id").get((req, res) => {
   const { id } = req.params;
