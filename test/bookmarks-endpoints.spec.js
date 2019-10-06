@@ -29,8 +29,9 @@ describe("GET /bookmarks", () => {
         .expect(200, []);
     });
   });
+
   context("Given there are bookmarks", () => {
-    const testBookmarks = makeBookmarksArray;
+    const testBookmarks = makeBookmarksArray();
 
     beforeEach("Insert bookmarks", () => {
       return db.into("bookmarks").insert(testBookmarks);
@@ -55,7 +56,7 @@ describe("GET /bookmarks/:bookmark_id", () => {
   });
 
   context("Given there are bookmarks", () => {
-    const testBookmarks = makeBookmarksArray;
+    const testBookmarks = makeBookmarksArray();
 
     beforeEach("Insert bookmarks", () => {
       return db.into("bookmarks").insert(testBookmarks);
