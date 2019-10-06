@@ -29,6 +29,19 @@ describe("GET /bookmarks", () => {
         .expect(200, []);
     });
   });
+  context("Given there are bookmarks", () => {
+    const testBookmarks = makeBookmarksArray;
+
+    beforeEach("Insert bookmarks", () => {
+      return db.into("bookmarks").insert(testBookmarks);
+    });
+
+    it("GET /bookmarks responds with 200 and all bookmarks", () => {
+      return supertest(app)
+        .get("/bookmarks")
+        .expect(200, testBookmarks);
+    });
+  });
 });
 
 describe("GET /bookmarks/:bookmark_id", () => {
@@ -38,6 +51,22 @@ describe("GET /bookmarks/:bookmark_id", () => {
       return supertest(app)
         .get(`/bookmarks/${bookmarkID}`)
         .expect(404, { error: { message: `Bookmark doesn't exist` } });
+    });
+  });
+
+  context("Given there are bookmarks", () => {
+    const testBookmarks = makeBookmarksArray;
+
+    beforeEach("Insert bookmarks", () => {
+      return db.into("bookmarks").insert(testBookmarks);
+    });
+
+    it("GET /bookmarks/:bookmark_id responds with 200 and specified bookmark", () => {
+      const bookmarkID = 2;
+      const expectedBookmark = testBookmarks[bookmarkID - 1];
+      return supertest(app)
+        .get(`/bookmarks/${bookmarkID}`)
+        .expect(200, expectedBookmark);
     });
   });
 });
