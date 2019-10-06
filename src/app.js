@@ -5,6 +5,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
 const winston = require("winston");
+const BookmarksService = require("./bookmarks-service");
 
 // winston logger:
 const logger = winston.createLogger({
@@ -13,13 +14,13 @@ const logger = winston.createLogger({
   transports: [new winston.transports.File({ filename: "info.log" })]
 });
 
-// if (NODE_EVN !== "production") {
-//   logger.add(
-//     new winston.transports.Console({
-//       format: winston.format.simple()
-//     })
-//   );
-// }
+if (NODE_ENV !== "production") {
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple()
+    })
+  );
+}
 
 // Routing requirements:
 const bookmarkRouter = require("./bookmarks/bookmark-router");
@@ -60,8 +61,18 @@ app.use(bookmarkRouter);
 //   next();
 // });
 
-app.get("/", (req, res, next) => {
+// GET requests:
+app.get("/", (req, res) => {
   res.status(200).send("Hello");
+});
+
+app.get("/bookmarks", (req, res, next) => {
+  const knexInstance = req.app.get("db");
+  BookmarksService.getAllBookmarks(knexInstance)
+    .then(bookmarks => {
+      res.json(bookmarks);
+    })
+    .catch(next);
 });
 
 module.exports = app;
