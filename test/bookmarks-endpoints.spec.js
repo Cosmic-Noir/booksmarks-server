@@ -76,7 +76,7 @@ describe("GET /bookmarks/:bookmark_id", () => {
 // POST endpoints
 describe(`POST /bookmarks`, () => {
   it(`creates a bookmark, responding with 201 and a new bookmark`, () => {
-    this.retries(3);
+    // this.retries(3);
     const newBookmark = {
       title: "Save The Planet",
       url: "www.google.com",

@@ -12,6 +12,7 @@ const sterilizedBookmark = bookmark => ({
   title: xss(bookmark.title),
   url: bookmark.url,
   description: xss(bookmark.description),
+  rating: bookmark.rating,
   date_published: bookmark.date_published
 });
 
@@ -26,8 +27,8 @@ bookmarkRouter
       .catch(next);
   })
   .post(bodyParser, (req, res, next) => {
-    const { title, url, description } = req.body;
-    const newBookmark = { title, url, description };
+    const { title, url, description, rating } = req.body;
+    const newBookmark = { title, url, description, rating };
     // Validate
     for (const [key, value] of Object.entries(newBookmark)) {
       if (value == null) {
@@ -48,7 +49,7 @@ bookmarkRouter
   });
 
 bookmarkRouter
-  .route("/bookmarks/:id")
+  .route("/:bookmark_id")
   .all((req, res, next) => {
     BookmarksService.getById(req.app.get("db"), req.params.bookmark_id)
       .then(bookmark => {
