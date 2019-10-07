@@ -1,11 +1,10 @@
 const express = require("express");
-const BookmarksService = require("../bookmarks-service");
+const BookmarksService = require("./bookmarks-service");
 const xss = require("xss");
-const uuid = require("uuid/v4");
-const logger = require("../logger");
 
-// Data
-// const { bookmarks } = require("../bookmarks");
+// Create router:
+const bookmarkRouter = express.Router();
+const bodyParser = express.json();
 
 // sterilized bookmark:
 const sterilizedBookmark = bookmark => ({
@@ -16,22 +15,18 @@ const sterilizedBookmark = bookmark => ({
   date_published: bookmark.date_published
 });
 
-// Create router:
-const bookmarkRouter = express.Router();
-const bodyParser = express.json();
-
 bookmarkRouter
-  .route("/bookmark")
+  .route("/")
   .get((req, res, next) => {
     const knexInstance = req.app.get("db");
     BookmarksService.getAllBookmarks(knexInstance)
-      .then(bookmark => {
+      .then(bookmarks => {
         res.json(bookmarks.map(sterilizedBookmark));
       })
       .catch(next);
   })
-  .post(bodyParser, (req, res) => {
-    const { title, url, content } = req.body;
+  .post(bodyParser, (req, res, next) => {
+    const { title, url, description } = req.body;
     const newBookmark = { title, url, description };
     // Validate
     for (const [key, value] of Object.entries(newBookmark)) {
@@ -46,20 +41,20 @@ bookmarkRouter
       .then(bookmark => {
         res
           .status(201)
-          .location(`/articles/${bookmark.id}`)
+          .location(`/bookmarks/${bookmark.id}`)
           .json(sterilizedBookmark(bookmark));
       })
       .catch(next);
   });
 
 bookmarkRouter
-  .route("/bookmark/:id")
+  .route("/bookmarks/:id")
   .all((req, res, next) => {
     BookmarksService.getById(req.app.get("db"), req.params.bookmark_id)
       .then(bookmark => {
         if (!bookmark) {
           return res.status(400).json({
-            error: { message: `Bookmark doesn't exist` }
+            error: { message: `Bookmark does not exist` }
           });
         }
         res.bookmark = bookmark;

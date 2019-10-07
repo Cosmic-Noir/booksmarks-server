@@ -4,23 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
-const winston = require("winston");
 const BookmarksService = require("./bookmarks-service");
-
-// winston logger:
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.json(),
-  transports: [new winston.transports.File({ filename: "info.log" })]
-});
-
-if (NODE_ENV !== "production") {
-  logger.add(
-    new winston.transports.Console({
-      format: winston.format.simple()
-    })
-  );
-}
 
 // Routing requirements:
 const bookmarkRouter = require("./bookmarks/bookmark-router");
@@ -47,7 +31,7 @@ app.use(function errorHandler(error, req, res, next) {
 });
 
 // Call Routing:
-app.use(bookmarkRouter);
+app.use("/bookmarks", bookmarkRouter);
 
 // Token Validation: - Causing tests to fail *** Don't know why ***
 // app.use(function validateBearerToken(req, res, next) {
@@ -64,29 +48,6 @@ app.use(bookmarkRouter);
 // GET requests:
 app.get("/", (req, res) => {
   res.status(200).send("Hello");
-});
-
-app.get("/bookmarks", (req, res, next) => {
-  const knexInstance = req.app.get("db");
-  BookmarksService.getAllBookmarks(knexInstance)
-    .then(bookmarks => {
-      res.json(bookmarks);
-    })
-    .catch(next);
-});
-
-app.get("/bookmarks/:bookmark_id", (req, res, next) => {
-  const knexInstance = req.app.get("db");
-  BookmarksService.getById(knexInstance, req.params.bookmark_id)
-    .then(bookmark => {
-      if (!bookmark) {
-        return res.status(404).json({
-          error: { message: `Bookmark doesn't exist` }
-        });
-      }
-      res.json(bookmark);
-    })
-    .catch(next);
 });
 
 module.exports = app;

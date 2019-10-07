@@ -22,8 +22,8 @@ before("Clear the table", () => db("bookmarks").truncate());
 afterEach("Cleanup", () => db("bookmarks").truncate());
 
 // GET endpoints
-describe("GET /bookmarks", () => {
-  context("Given no bookmarks", () => {
+describe(`GET /bookmarks`, () => {
+  context(`Given no bookmarks`, () => {
     it("Responds with 200 and an empty list", () => {
       return supertest(app)
         .get("/bookmarks")
@@ -52,7 +52,7 @@ describe("GET /bookmarks/:bookmark_id", () => {
       const bookmarkID = 12455;
       return supertest(app)
         .get(`/bookmarks/${bookmarkID}`)
-        .expect(404, { error: { message: `Bookmark doesn't exist` } });
+        .expect(404, { error: { message: `Bookmark does not exist` } });
     });
   });
 
