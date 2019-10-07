@@ -140,4 +140,27 @@ describe(`POST /bookmarks`, () => {
           .expect(res.body)
       );
   });
+
+  // Checking for missing fields:
+  const requiredFields = ["title", "description", "url", "rating"];
+
+  requiredFields.forEach(field => {
+    const newBookmark = {
+      title: "Test Title",
+      description: "Testing all the stuffs",
+      url: "www.yahoo.com",
+      rating: 9
+    };
+
+    it(`Responds with 400 and an error message when '${field}' is missing`, () => {
+      delete newBookmark[field];
+
+      return supertest(app)
+        .post("/bookmarks")
+        .send(newBookmark)
+        .expect(400, {
+          error: { message: `Missing '${field}' in request body` }
+        });
+    });
+  });
 });
