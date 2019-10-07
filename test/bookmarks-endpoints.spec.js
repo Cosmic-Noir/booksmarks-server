@@ -1,7 +1,10 @@
 const { expect } = require("chai");
 const knex = require("knex");
 const app = require("../src/app");
-const { makeBookmarksArray } = require("./bookmarks.fixtures");
+const {
+  makeBookmarksArray,
+  makeMaliciousBookmark
+} = require("./bookmarks.fixtures");
 
 let db;
 
@@ -44,6 +47,8 @@ describe(`GET /bookmarks`, () => {
         .expect(200, testBookmarks);
     });
   });
+
+  // context(`Given an xss attack bookmark`)
 });
 
 describe(`GET /bookmarks/:bookmark_id`, () => {
