@@ -92,6 +92,24 @@ describe(`GET /bookmarks/:bookmark_id`, () => {
         .expect(200, expectedBookmark);
     });
   });
+
+  context(`Given an XSS attack bookmark`, () => {
+    const { maliciousBookmark, expectedBookmark } = makeMaliciousBookmark();
+
+    beforeEach(`Insert malicious bookmark`, () => {
+      return db.into("bookmarks").insert([maliciousBookmark]);
+    });
+
+    it(`Removes XSS attack content`, () => {
+      return supertest(app)
+        .get(`/bookmarks/${maliciousBookmark.id}`)
+        .expect(200)
+        .expect(res => {
+          expect(res.body.title).to.eql(expectedBookmark.title);
+          expect(res.body.description).to.eql(expectedBookmark.description);
+        });
+    });
+  });
 });
 
 // POST endpoints
