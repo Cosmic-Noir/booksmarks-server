@@ -54,7 +54,7 @@ bookmarkRouter
     BookmarksService.getById(req.app.get("db"), req.params.bookmark_id)
       .then(bookmark => {
         if (!bookmark) {
-          return res.status(400).json({
+          return res.status(404).json({
             error: { message: `Bookmark does not exist` }
           });
         }

@@ -46,9 +46,9 @@ describe(`GET /bookmarks`, () => {
   });
 });
 
-describe("GET /bookmarks/:bookmark_id", () => {
-  context("Given no bookmark in db", () => {
-    it("Responds with 404", () => {
+describe(`GET /bookmarks/:bookmark_id`, () => {
+  context(`Given no bookmark in db`, () => {
+    it(`Responds with 404`, () => {
       const bookmarkID = 12455;
       return supertest(app)
         .get(`/bookmarks/${bookmarkID}`)
