@@ -75,8 +75,8 @@ describe(`GET /bookmarks/:bookmark_id`, () => {
 
 // POST endpoints
 describe(`POST /bookmarks`, () => {
-  it(`creates a bookmark, responding with 201 and a new bookmark`, () => {
-    // this.retries(3);
+  it(`creates a bookmark, responding with 201 and a new bookmark`, function() {
+    this.retries(3);
     const newBookmark = {
       title: "Save The Planet",
       url: "www.google.com",
@@ -93,9 +93,7 @@ describe(`POST /bookmarks`, () => {
         expect(res.body.description).to.eql(newBookmark.description);
         expect(res.body.rating).to.eql(newBookmark.rating);
         expect(res.body).to.have.property("id");
-        const expected = new Date().toLocaleString();
-        const actual = new Date(res.body.date_published).toLocaleString();
-        expect(actual).to.eql(expected);
+        expect(res.headers.location).to.eql(`/bookmarks/${res.body.id}`);
       })
       .then(res =>
         supertest(app)
