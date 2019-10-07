@@ -21,6 +21,7 @@ before("Clear the table", () => db("bookmarks").truncate());
 
 afterEach("Cleanup", () => db("bookmarks").truncate());
 
+// GET endpoints
 describe("GET /bookmarks", () => {
   context("Given no bookmarks", () => {
     it("Responds with 200 and an empty list", () => {
@@ -69,5 +70,37 @@ describe("GET /bookmarks/:bookmark_id", () => {
         .get(`/bookmarks/${bookmarkID}`)
         .expect(200, expectedBookmark);
     });
+  });
+});
+
+// POST endpoints
+describe(`POST /bookmarks`, () => {
+  it(`creates a bookmark, responding with 201 and a new bookmark`, () => {
+    this.retries(3);
+    const newBookmark = {
+      title: "Save The Planet",
+      url: "www.google.com",
+      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit",
+      rating: "10"
+    };
+    return supertest(app)
+      .post("/bookmarks")
+      .send(newBookmark)
+      .expect(201)
+      .expect(res => {
+        expect(res.body.title).to.eql(newBookmark.title);
+        expect(res.body.url).to.eql(newBookmark.url);
+        expect(res.body.description).to.eql(newBookmark.description);
+        expect(res.body.rating).to.eql(newBookmark.rating);
+        expect(res.body).to.have.property("id");
+        const expected = new Date().toLocaleString();
+        const actual = new Date(res.body.date_published).toLocaleString();
+        expect(actual).to.eql(expected);
+      })
+      .then(res =>
+        supertest(app)
+          .get(`/bookmarks/${res.body.id}`)
+          .expect(res.body)
+      );
   });
 });
