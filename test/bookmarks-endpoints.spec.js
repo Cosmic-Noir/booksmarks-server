@@ -174,4 +174,27 @@ describe(`DELETE /bookmarks/:bookmark_id`, () => {
         .expect(404, { error: { message: `Bookmark does not exist` } });
     });
   });
+
+  context(`Given there are bookmarks`, () => {
+    const testBookmarks = makeBookmarksArray();
+
+    beforeEach(`Insert bookmarks`, () => {
+      return db.into("bookmarks").insert(testBookmarks);
+    });
+
+    it(`Responds with 204 and removes the article`, () => {
+      const idToRemove = 2;
+      const expectedBookmarks = testBookmarks.filter(
+        bookmark => bookmark.id !== idToRemove
+      );
+      return supertest(app)
+        .delete(`/bookmarks/${idToRemove}`)
+        .expect(204)
+        .then(res => {
+          supertest(app)
+            .get(`/bookmarks`)
+            .expect(expectedBookmarks);
+        });
+    });
+  });
 });
