@@ -164,3 +164,14 @@ describe(`POST /bookmarks`, () => {
     });
   });
 });
+
+describe(`DELETE /bookmarks/:bookmark_id`, () => {
+  context(`Given no bookmarks`, () => {
+    it(`Responds with 404`, () => {
+      const bookmarkID = 12455;
+      return supertest(app)
+        .get(`/bookmarks/${bookmarkID}`)
+        .expect(404, { error: { message: `Bookmark does not exist` } });
+    });
+  });
+});
