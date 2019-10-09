@@ -199,4 +199,33 @@ describe(`DELETE /api/bookmarks/:bookmark_id`, () => {
   });
 });
 
-// describe.only(`PATCH /api/articles/:article_id`)
+describe.only(`PATCH /api/articles/:article_id`, () => {
+  context(`Given no bookmarks`, () => {
+    it(`Responds with 404`, () => {
+      const articleId = 23567;
+      return supertest(app)
+        .patch(`/api/bookmarks/${articleId}`)
+        .expect(404, { error: { message: `Bookmark does not exist` } });
+    });
+  });
+
+  context(`Given there are bookmarks in the database`, () => {
+    const testBookmarks = makeBookmarksArray();
+    beforeEach(`insert bookmarks`, () => {
+      return db.into("bookmarks").insert(testBookmarks);
+    });
+
+    it(`Responds with 204 and updates the bookmark`, () => {
+      const idToUpdate = 2;
+      const updatedBookmark = {
+        title: "A new title",
+        description: "A new description, wow!"
+      };
+
+      return supertest(app)
+        .patch(`/api/bookmarks/${idToUpdate}`)
+        .send(updatedBookmark)
+        .expect(204);
+    });
+  });
+});

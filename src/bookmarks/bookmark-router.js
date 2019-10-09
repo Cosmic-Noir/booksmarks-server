@@ -73,6 +73,30 @@ bookmarkRouter
         res.status(204).end();
       })
       .catch(next);
+  })
+  .patch(bodyParser, (req, res, next) => {
+    const { title, description, url, rating } = req.body;
+    const bookmarkToUpdate = { title, description, url, rating };
+
+    const numberOfValues = Object.values(bookmarkToUpdate).filter(Boolean)
+      .length;
+    if (numberOfValues === 0) {
+      return res.status(400).json({
+        error: {
+          message: `Request body must contain either 'title', 'description', 'url', or 'rating'`
+        }
+      });
+    }
+
+    BookmarksService.updateBookmark(
+      req.app.get("db"),
+      req.params.bookmark_id,
+      bookmarkToUpdate
+    )
+      .then(numRowsAffected => {
+        res.status(204).end();
+      })
+      .catch(next);
   });
 
 module.exports = bookmarkRouter;
