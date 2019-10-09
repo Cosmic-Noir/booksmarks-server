@@ -31,7 +31,7 @@ app.use(function errorHandler(error, req, res, next) {
 });
 
 // Call Routing:
-app.use("/bookmarks", bookmarkRouter);
+app.use("/api/bookmarks", bookmarkRouter);
 
 // Token Validation: - Causing tests to fail *** Don't know why ***
 // app.use(function validateBearerToken(req, res, next) {
