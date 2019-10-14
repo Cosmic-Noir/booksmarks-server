@@ -199,7 +199,7 @@ describe(`DELETE /api/bookmarks/:bookmark_id`, () => {
   });
 });
 
-describe.only(`PATCH /api/articles/:article_id`, () => {
+describe(`PATCH /api/articles/:article_id`, () => {
   context(`Given no bookmarks`, () => {
     it(`Responds with 404`, () => {
       const articleId = 23567;
